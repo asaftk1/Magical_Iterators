@@ -4,41 +4,20 @@
 
 namespace ariel
 {
-    // class MagicalContainer;  // Forward declaration
+    // class MagicalContainer
 
     class MagicalContainer
     {
     private:
-        std::vector<int> elements; // Dynamic array to store the elements
+        std::vector<int> container; // Dynamic array to store the container
 
     public:
-        int size()
-        {
-            return elements.size();
-        }
+        int size() const { return container.size(); }
+        void addElement(int element) { container.push_back(element); }
+        void removeElement(int element) { /* Implement your logic here */ }
+        int getElement(std::size_t index) const { return container.at(index); }
 
-        void addElement(int element)
-        {
-            elements.push_back(element);
-        }
-
-        void removeElement(int element)
-        {
-            for (auto it = elements.begin(); it != elements.end(); ++it)
-            {
-                if (*it == element)
-                {
-                    elements.erase(it);
-                    break;
-                }
-            }
-        }
-
-        int getSize() const
-        {
-            return elements.size();
-        }
-
+        // AscendingIterator
         class AscendingIterator
         {
         private:
@@ -48,49 +27,21 @@ namespace ariel
         public:
             AscendingIterator(const MagicalContainer &cont)
                 : container(cont), currentIndex(0) {}
-            AscendingIterator begin()
-            {
-                return *this;
-            }
-            AscendingIterator end()
-            {
-                AscendingIterator iter = *this;
-                iter.currentIndex = static_cast<typename std::vector<int>::size_type>(container.getSize());
-                return iter;
-            }
 
-            bool hasNext() const
-            {
-                return currentIndex < container.elements.size();
-            }
+            ~AscendingIterator() {}
 
-            int next()
-            {
-                int element = container.elements[currentIndex];
-                currentIndex++;
-                return element;
-            }
-
-            // Implement the dereference operator *
-            int operator*() const
-            {
-                return container.elements[currentIndex];
-            }
-
-            // Implement the pre-increment operator ++
-            AscendingIterator &operator++()
-            {
-                currentIndex++;
-                return *this;
-            }
-
-            // Implement the inequality operator !=
-            bool operator!=(const AscendingIterator &other) const
-            {
-                return currentIndex != other.currentIndex;
-            }
+            AscendingIterator &operator=(const AscendingIterator &other) { return *this; }
+            bool operator==(const AscendingIterator &other) const { return currentIndex == other.currentIndex; }
+            bool operator!=(const AscendingIterator &other) const { return currentIndex != other.currentIndex; }
+            bool operator>(const AscendingIterator &other) const { return currentIndex > other.currentIndex; }
+            bool operator<(const AscendingIterator &other) const { return currentIndex < other.currentIndex; }
+            const int &operator*() const {return container.container[currentIndex];  }
+            AscendingIterator &operator++() { ++currentIndex; return *this; }
+            AscendingIterator begin() const { return *this; }
+            AscendingIterator end() const { AscendingIterator iter(*this); iter.currentIndex = container.container.size(); return iter; }
         };
 
+        // SideCrossIterator
         class SideCrossIterator
         {
         private:
@@ -102,134 +53,43 @@ namespace ariel
             SideCrossIterator(const MagicalContainer &cont)
                 : container(cont), currentIndex(0), forward(true) {}
 
-            SideCrossIterator begin()
-            {
-                return *this;
-            }
-            SideCrossIterator end()
-            {
-                SideCrossIterator iter = *this;
-                iter.currentIndex = static_cast<typename std::vector<int>::size_type>(container.getSize());
-                return iter;
-            }
+            ~SideCrossIterator() {}
 
-            bool hasNext() const
-            {
-                return currentIndex < container.elements.size();
-            }
-
-            int next()
-            {
-                int element = container.elements[currentIndex];
-                if (forward)
-                {
-                    currentIndex++;
-                    forward = false;
-                }
-                else
-                {
-                    currentIndex--;
-                    forward = true;
-                }
-                return element;
-            }
-
-            // Implement the dereference operator *
-            int operator*() const
-            {
-                return container.elements[currentIndex];
-            }
-
-            // Implement the pre-increment operator ++
-            SideCrossIterator &operator++()
-            {
-                currentIndex++;
-                return *this;
-            }
-
-            // Implement the inequality operator !=
-            bool operator!=(const SideCrossIterator &other) const
-            {
-                return currentIndex != other.currentIndex;
-            }
+            SideCrossIterator &operator=(const SideCrossIterator &other) { return *this; }
+            bool operator==(const SideCrossIterator &other) const { return currentIndex == other.currentIndex; }
+            bool operator!=(const SideCrossIterator &other) const { return currentIndex != other.currentIndex; }
+            bool operator>(const SideCrossIterator &other) const { return currentIndex > other.currentIndex; }
+            bool operator<(const SideCrossIterator &other) const { return currentIndex < other.currentIndex; }
+            int operator*() const { return container.container[currentIndex];  }
+            SideCrossIterator &operator++() { ++currentIndex; return *this; }
+            SideCrossIterator begin() const { return *this; }
+            SideCrossIterator end() const { SideCrossIterator iter(*this); iter.currentIndex = container.container.size(); return iter; }
         };
 
+        // PrimeIterator
         class PrimeIterator
         {
         private:
             const MagicalContainer &container;
             typename std::vector<int>::size_type currentIndex;
-
-            bool isPrime(int num) const
-            {
-                if (num <= 1)
-                {
-                    return false;
-                }
-                for (int i = 2; i * i <= num; i++)
-                {
-                    if (num % i == 0)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
+            bool IsPrimeFlag = false;
 
         public:
             PrimeIterator(const MagicalContainer &cont)
                 : container(cont), currentIndex(0) {}
 
-            PrimeIterator begin()
-            {
-                return *this;
-            }
-            PrimeIterator end()
-            {
-                PrimeIterator iter = *this;
-                iter.currentIndex = static_cast<typename std::vector<int>::size_type>(container.getSize());
-                return iter;
-            }
+            ~PrimeIterator() {}
 
-            bool hasNext()
-            {
-                while (currentIndex < container.elements.size())
-                {
-                    if (isPrime(container.elements[currentIndex]))
-                    {
-                        return true;
-                    }
-                    currentIndex++;
-                }
-                return false;
-            }
-
-            int next()
-            {
-                int element = container.elements[currentIndex];
-                currentIndex++;
-                return element;
-            }
-
-            // Implement the dereference operator *
-            int operator*() const
-            {
-                return container.elements[currentIndex];
-            }
-
-            // Implement the pre-increment operator ++
-            PrimeIterator &operator++()
-            {
-                currentIndex++;
-                return *this;
-            }
-
-            // Implement the inequality operator !=
-            bool operator!=(const PrimeIterator &other) const
-            {
-                return currentIndex != other.currentIndex;
-            }
+            PrimeIterator &operator=(const PrimeIterator &other) { return *this; }
+            bool operator==(const PrimeIterator &other) const { return currentIndex == other.currentIndex; }
+            bool operator!=(const PrimeIterator &other) const { return currentIndex != other.currentIndex; }
+            bool operator>(const PrimeIterator &other) const { return currentIndex > other.currentIndex; }
+            bool operator<(const PrimeIterator &other) const { return currentIndex < other.currentIndex; }
+            int operator*() const { return container.container[currentIndex]; }
+            PrimeIterator &operator++() { ++currentIndex; return *this; }
+            PrimeIterator begin() const { return *this; }
+            PrimeIterator end() const { PrimeIterator iter(*this); iter.currentIndex = container.container.size(); return iter; }
+            bool isPrime(int num) const { /* Implement your logic here */ return true; }
         };
     };
-
 }
